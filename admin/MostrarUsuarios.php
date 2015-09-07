@@ -1,0 +1,130 @@
+<?php
+	session_start();
+	if($_SESSION['loggedin'] != true){
+		header("Location: index.html");
+	}
+?>
+
+<?php
+    session_start();
+    if($_SESSION['loggedin'] != true){
+        header("Location: index.html");
+    }
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Biblioteca Don Rua</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="css/plugins/morris.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.php">Biblioteca Don Rua</a>
+            </div>
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> <?php echo $_SESSION['Nombre'];?> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="../logout.php"><i class="fa fa-fw fa-power-off"></i> Cerrar Sesión</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <?php
+                 include("menusuperior.php");
+            ?>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+
+    <section id="contact">
+		<a href="AgregarUsuario.php"><button class="btn btn-success">Agregar Usuario<img src="img/add.png" height="35px" alt="Agregar"></button></a>
+        <?php
+			include 'connection.php' ;
+			 $pdocn = Database::connect();
+			 $sql = ('SELECT U.IdUsuario, U.Nombre, U.Apellido, U.Correo, U.Telefono, U.Grupo, T.tipo_usuario FROM usuarios as U INNER JOIN tipousuario as T ON U.TipoUsuario = T.codigo ORDER BY IdUsuario ASC');
+			 
+			$con = "<table class=\"table table-bordered\" style=\"width:75%;margin: auto;\">";
+			 $con .= "<thead > <tr> <th class=\"text-center\">ID Usuario</th><th class=\"text-center\">Nombre</th><th class=\"text-center\">Apellido</th><th class=\"text-center\">Correo</th><th class=\"text-center\">Teléfono</th><th class=\"text-center\">Grupo</th><th class=\"text-center\">TipoUsuario</th>"; if($_SESSION['TipoUsuario'] == "Administrador"){ $con.= "<th class=\"text-center\">Operaciones</th>";} $con .= "</tr>";
+			 foreach ($pdocn->query($sql) as $row) {
+			 $con .= ' </thead><tbody>
+			 <tr>
+			 
+			 <td class="textcenter">'.$row["IdUsuario"].'</td>
+
+			 <td class="textcenter">'.$row["Nombre"].'</td>
+
+			 <td class="textcenter">'.$row["Apellido"].'</td>
+
+			 <td class="textcenter">'.$row["Correo"].'</td>
+
+			 <td class="textcenter">'.$row["Telefono"].'</td>
+
+			 <td class="textcenter">'.$row["Grupo"].'</td>
+			 
+			 <td class="textcenter">'.$row["tipo_usuario"].'</td>
+			 
+			 '; 
+			 if($_SESSION['TipoUsuario'] == "Administrador"){
+				 $con .= '<td class="text-center"><a href="ModificarUsuario.php?IdUsuario='.$row["IdUsuario"].'" > <img src="img/modify.png" height="30%" alt="Modificar"></a><a href="EliminarUsuario.php?IdUsuario='.$row["IdUsuario"].'"><img src="img/delete.png" height="35%" alt="Modificar"></a></td>';
+			 }
+			 
+			 $con .= '</tr>';
+			 }
+			 $con .= "</tbody></table>";
+			 echo "$con";
+			 
+			 Database::disconnect();
+		 ?>
+    </section>
+    
+</body>
+
+</html>
